@@ -225,6 +225,7 @@
 
 
  
+       
         /* Reset básico */
         * {
             margin: 0;
@@ -235,7 +236,12 @@
         html, body {
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Evita barras de rolagem */
+            /* overflow: hidden; FOI REMOVIDO DAQUI */
+        }
+
+        /* Nova regra para bloquear o scroll SÓ durante o splash */
+        body.splash-active {
+            overflow: hidden;
         }
 
         /* 1. Estrutura e Fundo */
@@ -305,7 +311,7 @@
             fill: none;
             /* Aplica o gradiente de fumaça ao traço */
             stroke: url(#smoke-gradient);
-            stroke-width: 11px; /* Aumentado de 5px */
+            stroke-width: 8px; /* Aumentado de 5px */
             
             /* Ponto-chave: Animação de "desenho" */
             stroke-dasharray: 629; /* Comprimento do caminho (2*PI*100) */
@@ -2539,6 +2545,7 @@
 <script>
         // 5. Lógica da Animação (JavaScript)
         document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('splash-active'); // <-- ADICIONADO
             const textEl = document.getElementById('loading-percentage');
             const splashScreen = document.getElementById('splash-screen'); // Pega a splash screen
             
@@ -2587,6 +2594,7 @@
                         // 6. (Opcional) Remove a splash screen do DOM após o fade
                         setTimeout(() => {
                             splashScreen.style.display = 'none';
+                            document.body.classList.remove('splash-active'); // <-- ADICIONADO
                         }, fadeOutDuration);
 
                     }, pauseAfterComplete);
