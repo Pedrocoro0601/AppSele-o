@@ -222,6 +222,177 @@
     .clickable-image:hover {
         opacity: 0.85;
     }
+
+
+ 
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Evita barras de rolagem */
+        }
+
+        /* 1. Estrutura e Fundo */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            /* Fundo azul-marinho escuro */
+            background-color: #020617;
+            z-index: 9999;
+            
+            /* Centraliza o wrapper da animação */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* Define a fonte para o texto */
+            font-family: 'Roboto Mono', monospace;
+            
+            /* Adicionado para o fade-out */
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        /* Classe de fade-out aplicada via JS */
+        #splash-screen.splash-fade-out {
+            opacity: 0;
+            pointer-events: none; /* Impede interação during o fade */
+        }
+
+        /* Wrapper para centralizar e sobrepor todos os elementos da animação */
+        .animation-wrapper {
+            position: relative;
+            width: 300px; /* Define um 'palco' central */
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 1. GIF do Planeta Terra (Centralizado) */
+        .planet-earth-gif {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            object-fit: cover;
+            /* Sombra sutil para destacar o planeta */
+            
+            z-index: 2; /* Acima do rastro, abaixo do avião */
+        }
+
+        /* Contêiner para o SVG da órbita/rastro */
+        .orbit-container {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            /* Garante que o SVG não bloqueie cliques (se houver) */
+            pointer-events: none; 
+            overflow: visible;
+            z-index: 1; /* Fica abaixo do planeta e do avião */
+        }
+
+        /* 3. Animação do Rastro (A Fumaça) */
+        #orbit-trail {
+            fill: none;
+            /* Aplica o gradiente de fumaça ao traço */
+            stroke: url(#smoke-gradient);
+            stroke-width: 11px; /* Aumentado de 5px */
+            
+            /* Ponto-chave: Animação de "desenho" */
+            stroke-dasharray: 629; /* Comprimento do caminho (2*PI*100) */
+            stroke-dashoffset: 629; /* Começa "vazio" */
+            
+            /* Efeitos de fumaça - MUDADO para filtro SVG */
+            filter: url(#smoke-filter);
+            opacity: 0.9;
+            
+            /* Animação do rastro - MUDADO PARA 'forwards' */
+            animation: draw-trail 5s linear forwards;
+        }
+        
+        /* 2. Animação de Órbita (O Avião) */
+        .transportador {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            z-index: 3; /* Fica acima de tudo */
+            
+            /* Cor e brilho ciano */
+            fill: #00d1ff;
+            filter: drop-shadow(0 0 5px #00d1ff);
+
+            /* Ponto-chave: Define o caminho da órbita */
+            /* O caminho é relativo ao container .animation-wrapper */
+            top: 0;
+            left: 0;
+            offset-path: path("M 50, 150 a 100,100 0 1,1 200,0 a 100,100 0 1,1 -200,0");
+            
+            /* MUDADO: Rotaciona o avião para ficar de frente */
+            offset-rotate: auto 90deg; /* Mantém a rotação automática do caminho e adiciona 90deg */
+
+            /* Animação da órbita - MUDADO PARA 'forwards' */
+            animation: orbit 5s linear forwards;
+        }
+        
+        /* 4. Animação de Texto (Typewriter) */
+        #loading-percentage {
+            position: absolute;
+            z-index: 4;
+            /* MUDADO: Cor para branco puro para brilho máximo */
+            color: #ffffff; 
+            font-size: 1.25rem; /* MUDADO de 1.5rem para caber o texto */
+            /* MUDADO: Efeito de brilho "neon" mais forte e em camadas */
+            text-shadow: 0 0 5px #ffffff, 
+                         0 0 10px #00d1ff, 
+                         0 0 20px #00d1ff, 
+                         0 0 30px #00d1ff;
+            width: 300px;
+            text-align: center;
+            /* Garante que não capture eventos do mouse */
+            pointer-events: none; 
+            white-space: nowrap; /* Garante que não quebre a linha */
+        }
+
+        /* Cursor piscante removido */
+        
+
+        /* Keyframes das Animações */
+
+        /* 2. Animação da Órbita (Avião) */
+        @keyframes orbit {
+            0% {
+                offset-distance: 0%;
+            }
+            100% {
+                offset-distance: 100%;
+            }
+        }
+
+        /* 3. Animação do Rastro (Fumaça) */
+        @keyframes draw-trail {
+            0% {
+                stroke-dashoffset: 629;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* 4. Animação do Cursor (Piscando) - REMOVIDA */
+ 
+    </style>
+
+
+
 </style>
 </head>
 <body class="bg-pasture-light dark:bg-dark-bg font-sans text-gray-800 dark:text-gray-200">
@@ -2329,5 +2500,104 @@
 
     });
 </script>
+
+
+<!-- Contêiner principal da Splash Screen --><div id="splash-screen">
+        
+        <!-- Wrapper para alinhar todos os elementos da animação --><div class="animation-wrapper">
+            
+            <!-- 1. GIF do Planeta (usando placeholder) --><!-- MUDADO: Fundo do placeholder para 'transparent' --><img src="earth1.gif" class="planet-earth-gif" alt="Planeta Terra">
+
+            <!-- 3. SVG para o Rastro e Gradiente --><svg class="orbit-container" viewBox="0 0 300 300">
+                <defs>
+                    <!-- Gradiente para o rastro de fumaça --><linearGradient id="smoke-gradient">
+                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.2" /> <!-- Mudado para branco, opacidade 0.2 --><stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.7" /> <!-- Mudado para branco, opacidade 0.7 --><stop offset="100%" stop-color="#FFFFFF" stop-opacity="1" /> <!-- Mudado para branco --></linearGradient>
+
+                    <!-- ADICIONADO: Filtro SVG para o "efeito fumaça real" --><filter id="smoke-filter" x="-20%" y="-20%" width="140%" height="140%">
+                        <!-- 1. Borra o traço original --><feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blurred" /> <!-- Aumentado de 5 --><!-- 2. Cria o padrão de ruído (turbulência) --><feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="turbulence"> <!-- Alterado de 0.02 --><!-- Anima a turbulência para fazer a fumaça "ferver" --><animate 
+                                attributeName="baseFrequency" 
+                                dur="5s" 
+                                values="0.015;0.03;0.015" <!-- Alterado -->repeatCount="indefinite" />
+                        </feTurbulence>
+                        
+                        <!-- 3. Usa a turbulência para distorcer o traço borrado --><!-- scale="25" controla a "intensidade" da distorção --><feDisplacementMap in="blurred" in2="turbulence" scale="25" xChannelSelector="R" yChannelSelector="G" /> <!-- Aumentado de 15 --></filter>
+                </defs>
+                
+                <!-- O caminho do rastro (exatamente o mesmo do offset-path) --><path id="orbit-trail" d="M 50, 150 a 100,100 0 1,1 200,0 a 100,100 0 1,1 -200,0" />
+            </svg>
+            
+            <!-- 2. O Avião (SVG) --><svg class="transportador" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <!-- Ícone do avião comercial --><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"></path>
+            </svg>
+            
+            <!-- 4. Texto (agora com etapas) --><div id="loading-percentage"></div>
+
+        </div>
+    </div>
+
+
+<script>
+        // 5. Lógica da Animação (JavaScript)
+        document.addEventListener('DOMContentLoaded', () => {
+            const textEl = document.getElementById('loading-percentage');
+            const splashScreen = document.getElementById('splash-screen'); // Pega a splash screen
+            
+            // Constantes de tempo
+            const loadingDuration = 5000; // Duração da animação principal (5s)
+            const pauseAfterComplete = 500; // MUDADO: Pausa de 1.5s para 0.5s
+            const fadeOutDuration = 500; // Duração do fade-out (deve bater com o CSS)
+            
+            // MUDADO: Etapas do carregamento em vez de porcentagem
+            const steps = [
+                "Selecionando oócito...", // Etapa 1
+                "Maturando oócito...",    // Etapa 2
+                "Fertilizando...",         // Etapa 3
+                "Cultivando embrião...",    // Etapa 4
+                "Bem vindo ao mundo."      // Etapa 5
+            ];
+            // Divide os 5s pelo número de etapas (5000 / 5 = 1000ms por etapa)
+            const stepDuration = loadingDuration / steps.length; 
+
+            function startSplashAnimation() {
+                // 1. Define o texto inicial (Etapa 1)
+                textEl.textContent = steps[0];
+                
+                // 2. Agenda a troca dos próximos textos
+                steps.forEach((step, index) => {
+                    if (index === 0) return; // Já mostramos o primeiro
+                    
+                    setTimeout(() => {
+                        textEl.textContent = step;
+                    }, index * stepDuration);
+                    // 1 * 1000 = 1.0s (Mostra Etapa 2)
+                    // 2 * 1000 = 2.0s (Mostra Etapa 3)
+                    // 3 * 1000 = 3.0s (Mostra Etapa 4)
+                    // 4 * 1000 = 4.0s (Mostra Etapa 5)
+                });
+
+                // 3. Agenda o final da animação (após 5s)
+                // Isso garante que a animação inteira (avião, rastro) termine
+                setTimeout(() => {
+                    
+                    // 4. Aguarda a pausa de 1.5s
+                    setTimeout(() => {
+                        // 5. Inicia o fade-out da splash screen
+                        splashScreen.classList.add('splash-fade-out');
+                        
+                        // 6. (Opcional) Remove a splash screen do DOM após o fade
+                        setTimeout(() => {
+                            splashScreen.style.display = 'none';
+                        }, fadeOutDuration);
+
+                    }, pauseAfterComplete);
+
+                }, loadingDuration); // Gatilho principal em 5000ms
+            }
+            
+            // Inicia o ciclo único
+            startSplashAnimation();
+        });
+    </script>
+
 </body>
 </html>
